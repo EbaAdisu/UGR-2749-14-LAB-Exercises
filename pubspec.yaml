@@ -1,0 +1,10 @@
+name: Eba
+# description: Dart Lab
+
+dependencies:
+    http: ^1.2.1
+    dio: ^4.0.0
+    path: ^1.8.0
+
+environment:
+    sdk: '^3.3.0'

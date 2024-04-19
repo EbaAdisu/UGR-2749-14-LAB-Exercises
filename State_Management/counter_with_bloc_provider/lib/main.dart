@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: BlocProvider(
-        create: (_) => CounterBloc(),
+        create: (BuildContext context) => CounterBloc(),
         child: HomePage(),
       ),
     );
@@ -31,14 +31,13 @@ class HomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Center(
-        child: BlocBuilder<CounterBloc, CounterState>(
+        child: BlocBuilder<CounterBloc, int>(
           builder: (context, state) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('You have pushed the button this many times:'),
-                Text('${state.count}',
-                    style: Theme.of(context).textTheme.headline4),
+                Text('${state}', style: Theme.of(context).textTheme.headline4),
               ],
             );
           },
@@ -49,14 +48,14 @@ class HomePage extends StatelessWidget {
         children: <Widget>[
           FloatingActionButton(
             onPressed: () =>
-                context.read<CounterBloc>().add(CounterEvent.decrement),
+                context.read<CounterBloc>().add(CounterDecrementPressed()),
             tooltip: 'Decrement',
             child: Icon(Icons.remove),
           ),
           SizedBox(width: 20),
           FloatingActionButton(
             onPressed: () =>
-                context.read<CounterBloc>().add(CounterEvent.increment),
+                context.read<CounterBloc>().add(CounterIncrementPressed()),
             tooltip: 'Increment',
             child: Icon(Icons.add),
           ),
@@ -66,24 +65,22 @@ class HomePage extends StatelessWidget {
   }
 }
 
-enum CounterEvent { increment, decrement }
+abstract class CounterEvent {}
+
+class CounterIncrementPressed extends CounterEvent {}
+
+class CounterDecrementPressed extends CounterEvent {}
 
 class CounterState {
   final int count;
   CounterState({required this.count});
 }
 
-class CounterBloc extends Bloc<CounterEvent, CounterState> {
-  CounterBloc() : super(CounterState(count: 0)) {
-    on<CounterEvent>((event, emit) {
-      switch (event) {
-        case CounterEvent.increment:
-          emit(CounterState(count: state.count + 1));
-          break;
-        case CounterEvent.decrement:
-          emit(CounterState(count: state.count - 1));
-          break;
-      }
+class CounterBloc extends Bloc<CounterEvent, int> {
+  CounterBloc() : super(0) {
+    on<CounterIncrementPressed>((event, emit) {
+      emit(state + 1);
     });
+    on<CounterDecrementPressed>((event, emit) => emit(state - 1));
   }
 }

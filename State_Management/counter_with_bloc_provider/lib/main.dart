@@ -22,8 +22,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// home_page.dart
-
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -55,7 +53,7 @@ class HomePage extends StatelessWidget {
             tooltip: 'Decrement',
             child: Icon(Icons.remove),
           ),
-          SizedBox(width: 20), // Spacing between the buttons
+          SizedBox(width: 20),
           FloatingActionButton(
             onPressed: () =>
                 context.read<CounterBloc>().add(CounterEvent.increment),
@@ -70,13 +68,10 @@ class HomePage extends StatelessWidget {
 
 enum CounterEvent { increment, decrement }
 
-// counter_state.dart
 class CounterState {
   final int count;
   CounterState({required this.count});
 }
-
-// counter_bloc.dart
 
 class CounterBloc extends Bloc<CounterEvent, CounterState> {
   CounterBloc() : super(CounterState(count: 0)) {

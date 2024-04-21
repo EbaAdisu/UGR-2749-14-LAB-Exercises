@@ -1,6 +1,5 @@
-// post_service.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -11,14 +10,14 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PostProvider(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: PostListScreen(),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: BlocProvider(
+        create: (context) => PostBloc(PostService()),
+        child: PostListScreen(),
       ),
     );
   }
@@ -30,11 +29,12 @@ class Post {
   final String title;
   final String body;
 
-  Post(
-      {required this.id,
-      required this.userId,
-      required this.title,
-      required this.body});
+  Post({
+    required this.id,
+    required this.userId,
+    required this.title,
+    required this.body,
+  });
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -59,50 +59,37 @@ class PostService {
   }
 }
 
-class PostProvider extends ChangeNotifier {
-  List<Post> _posts = [];
-  final PostService _postService = PostService();
+class PostBloc extends Cubit<List<Post>> {
+  final PostService postService;
 
-  List<Post> get posts => _posts;
+  PostBloc(this.postService) : super([]);
 
-  Future<void> fetchPosts() async {
+  void fetchPosts() async {
     try {
-      _posts = await _postService.getPosts();
-      notifyListeners();
+      final posts = await postService.getPosts();
+      emit(posts);
     } catch (e) {
       print(e);
     }
   }
 }
 
-// post_list_screen.dart
-
-class PostListScreen extends StatefulWidget {
-  @override
-  _PostListScreenState createState() => _PostListScreenState();
-}
-
-class _PostListScreenState extends State<PostListScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      Provider.of<PostProvider>(context, listen: false).fetchPosts();
-    });
-  }
-
+class PostListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final postProvider = Provider.of<PostProvider>(context);
-    final posts = postProvider.posts;
+    final postBloc = BlocProvider.of<PostBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Posts'),
       ),
-      body: posts.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
+      body: BlocBuilder<PostBloc, List<Post>>(
+        builder: (context, posts) {
+          if (posts.isEmpty) {
+            postBloc.fetchPosts(); // Fetch posts when the list is empty
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
@@ -111,7 +98,10 @@ class _PostListScreenState extends State<PostListScreen> {
                   subtitle: Text(post.body),
                 );
               },
-            ),
+            );
+          }
+        },
+      ),
     );
   }
 }

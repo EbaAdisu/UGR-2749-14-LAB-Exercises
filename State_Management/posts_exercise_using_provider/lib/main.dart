@@ -1,4 +1,3 @@
-// post_service.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -30,11 +29,12 @@ class Post {
   final String title;
   final String body;
 
-  Post(
-      {required this.id,
-      required this.userId,
-      required this.title,
-      required this.body});
+  Post({
+    required this.id,
+    required this.userId,
+    required this.title,
+    required this.body,
+  });
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
@@ -75,22 +75,7 @@ class PostProvider extends ChangeNotifier {
   }
 }
 
-// post_list_screen.dart
-
-class PostListScreen extends StatefulWidget {
-  @override
-  _PostListScreenState createState() => _PostListScreenState();
-}
-
-class _PostListScreenState extends State<PostListScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      Provider.of<PostProvider>(context, listen: false).fetchPosts();
-    });
-  }
-
+class PostListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final postProvider = Provider.of<PostProvider>(context);

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,8 +44,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Form extends StatelessWidget {
-  const Form({super.key});
+class CustomForm extends StatelessWidget {
+  const CustomForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -375,7 +373,7 @@ class Page2 extends StatelessWidget {
                 },
                 child: Container(
                   color: Colors.blue[200],
-                  child: Text('XS'),
+                  child: const Text('XS'),
                 ),
               ),
             ),
@@ -429,7 +427,7 @@ class Page2 extends StatelessWidget {
                 child: Container(
                     width: 400,
                     height: 25,
-                    child: Center(child: const Text('Add to Shoppung Chart')))),
+                    child: const Center(child: Text('Add to Shopping Cart')))),
           ],
         )
       ],
